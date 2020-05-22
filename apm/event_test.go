@@ -3,7 +3,7 @@ package apm
 import (
 	"testing"
 
-	"github.com/mongodb/grip/message"
+	"github.com/deciduosity/grip/message"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

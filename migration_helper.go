@@ -3,8 +3,8 @@ package anser
 import (
 	"context"
 
-	"github.com/mongodb/amboy/job"
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/amboy/job"
+	"github.com/deciduosity/anser/model"
 )
 
 // MigrationHelper is an interface embedded in all jobs as an

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mongodb/amboy/registry"
-	"github.com/mongodb/anser/mock"
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/amboy/registry"
+	"github.com/deciduosity/anser/mock"
+	"github.com/deciduosity/anser/model"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

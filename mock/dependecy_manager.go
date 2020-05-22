@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"github.com/mongodb/amboy/dependency"
+	"github.com/deciduosity/amboy/dependency"
 )
 
 type DependencyManager struct {

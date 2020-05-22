@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/evergreen-ci/birch"
+	"github.com/deciduosity/birch"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/event"
 )

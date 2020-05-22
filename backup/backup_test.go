@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/evergreen-ci/birch"
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/birch"
+	"github.com/deciduosity/anser/model"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

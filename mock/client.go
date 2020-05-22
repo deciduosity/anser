@@ -4,9 +4,9 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/evergreen-ci/birch"
-	"github.com/mongodb/anser/client"
-	"github.com/mongodb/grip"
+	"github.com/deciduosity/birch"
+	"github.com/deciduosity/anser/client"
+	"github.com/deciduosity/grip"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

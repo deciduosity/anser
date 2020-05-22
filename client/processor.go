@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/evergreen-ci/birch"
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/birch"
+	"github.com/deciduosity/anser/model"
 )
 
 // Processor defines the process for processing a stream of

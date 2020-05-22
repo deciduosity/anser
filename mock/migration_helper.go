@@ -1,10 +1,10 @@
 package mock
 
 import (
-	"github.com/mongodb/amboy/job"
-	"github.com/mongodb/anser/db"
-	"github.com/mongodb/anser/model"
-	"github.com/mongodb/grip"
+	"github.com/deciduosity/amboy/job"
+	"github.com/deciduosity/anser/db"
+	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/grip"
 )
 
 type MigrationHelper struct {

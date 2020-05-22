@@ -48,7 +48,7 @@ interfaces provided by the anser/db package.
 package anser
 
 import (
-	"github.com/mongodb/amboy"
+	"github.com/deciduosity/amboy"
 )
 
 // Migration is a type alias for amboy.Job, used to identify

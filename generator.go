@@ -14,10 +14,10 @@ package anser
 import (
 	"context"
 
-	"github.com/mongodb/amboy"
-	"github.com/mongodb/amboy/dependency"
-	"github.com/mongodb/anser/model"
-	"github.com/mongodb/grip"
+	"github.com/deciduosity/amboy"
+	"github.com/deciduosity/amboy/dependency"
+	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/grip"
 	"github.com/pkg/errors"
 )
 

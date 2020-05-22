@@ -15,12 +15,12 @@ package anser
 import (
 	"sync"
 
-	"github.com/mongodb/amboy"
-	"github.com/mongodb/amboy/dependency"
-	"github.com/mongodb/anser/client"
-	"github.com/mongodb/anser/db"
-	"github.com/mongodb/anser/model"
-	"github.com/mongodb/grip"
+	"github.com/deciduosity/amboy"
+	"github.com/deciduosity/amboy/dependency"
+	"github.com/deciduosity/anser/client"
+	"github.com/deciduosity/anser/db"
+	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/grip"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	mgo "gopkg.in/mgo.v2"
@@ -116,7 +116,7 @@ func (e *envState) Setup(q amboy.Queue, cl client.Client, session db.Session) er
 	defer e.mu.Unlock()
 	catcher.NewWhen(e.isSetup, "reconfiguring a queue is not supported")
 
-	catcher.NewWhen(!q.Started(), "configuring anser environment with a non-running queue")
+	catcher.NewWhen(!q.Info().Started, "configuring anser environment with a non-running queue")
 
 	if catcher.HasErrors() {
 		return catcher.Resolve()

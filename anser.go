@@ -24,9 +24,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/mongodb/amboy"
-	"github.com/mongodb/anser/model"
-	"github.com/mongodb/grip"
+	"github.com/deciduosity/amboy"
+	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/grip"
 	"github.com/pkg/errors"
 )
 

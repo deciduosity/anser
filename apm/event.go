@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/evergreen-ci/birch"
-	"github.com/mongodb/grip/message"
+	"github.com/deciduosity/birch"
+	"github.com/deciduosity/grip/message"
 )
 
 type eventKey struct {

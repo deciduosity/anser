@@ -3,11 +3,11 @@ package mock
 import (
 	"testing"
 
-	"github.com/mongodb/amboy/dependency"
-	"github.com/mongodb/anser"
-	"github.com/mongodb/anser/client"
-	"github.com/mongodb/anser/db"
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/amboy/dependency"
+	"github.com/deciduosity/anser"
+	"github.com/deciduosity/anser/client"
+	"github.com/deciduosity/anser/db"
+	"github.com/deciduosity/anser/model"
 	"github.com/stretchr/testify/assert"
 )
 

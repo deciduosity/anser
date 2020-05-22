@@ -4,11 +4,11 @@ import (
 	"context"
 	"sync"
 
-	"github.com/mongodb/amboy/job"
-	"github.com/mongodb/anser/db"
-	"github.com/mongodb/anser/model"
-	"github.com/mongodb/grip"
-	"github.com/mongodb/grip/message"
+	"github.com/deciduosity/amboy/job"
+	"github.com/deciduosity/anser/db"
+	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/grip"
+	"github.com/deciduosity/grip/message"
 	"github.com/pkg/errors"
 )
 

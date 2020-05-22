@@ -3,9 +3,9 @@ package anser
 import (
 	"testing"
 
-	"github.com/mongodb/anser/db"
-	"github.com/mongodb/anser/mock"
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/anser/db"
+	"github.com/deciduosity/anser/mock"
+	"github.com/deciduosity/anser/model"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2/bson"
 )

@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mongodb/amboy"
-	"github.com/mongodb/amboy/queue"
-	"github.com/mongodb/anser/mock"
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/amboy"
+	"github.com/deciduosity/amboy/queue"
+	"github.com/deciduosity/anser/mock"
+	"github.com/deciduosity/anser/model"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 )

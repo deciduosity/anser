@@ -1,8 +1,8 @@
 package mock
 
 import (
-	"github.com/mongodb/anser/client"
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/anser/client"
+	"github.com/deciduosity/anser/model"
 )
 
 type Processor struct {

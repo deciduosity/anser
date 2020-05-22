@@ -3,10 +3,10 @@ package anser
 import (
 	"context"
 
-	"github.com/mongodb/amboy/job"
-	"github.com/mongodb/anser/mock"
-	"github.com/mongodb/anser/model"
-	"github.com/mongodb/grip"
+	"github.com/deciduosity/amboy/job"
+	"github.com/deciduosity/anser/mock"
+	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/grip"
 )
 
 // this has to be implemented in the anser package because of the

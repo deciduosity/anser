@@ -1,8 +1,8 @@
 package apm
 
 import (
-	"github.com/evergreen-ci/birch"
-	"github.com/mongodb/grip/message"
+	"github.com/deciduosity/birch"
+	"github.com/deciduosity/grip/message"
 	"go.mongodb.org/mongo-driver/event"
 )
 

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/anser/model"
 	"gopkg.in/mgo.v2/bson"
 )
 

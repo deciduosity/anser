@@ -1,8 +1,8 @@
 package mock
 
 import (
-	"github.com/mongodb/anser/db"
-	"github.com/mongodb/anser/model"
+	"github.com/deciduosity/anser/db"
+	"github.com/deciduosity/anser/model"
 )
 
 type LegacyProcessor struct {

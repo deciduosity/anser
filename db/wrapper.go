@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mongodb/grip"
+	"github.com/deciduosity/grip"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

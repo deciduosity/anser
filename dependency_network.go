@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/mongodb/anser/model"
-	"github.com/mongodb/grip"
+	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/grip"
 	"github.com/tychoish/tarjan"
 )
 

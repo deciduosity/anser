@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/mongodb/ftdc"
-	"github.com/mongodb/grip"
-	"github.com/mongodb/grip/recovery"
+	"github.com/deciduosity/ftdc"
+	"github.com/deciduosity/grip"
+	"github.com/deciduosity/grip/recovery"
 )
 
 type loggingMonitor struct {
