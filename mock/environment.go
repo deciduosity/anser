@@ -4,7 +4,6 @@ import (
 	"github.com/deciduosity/amboy"
 	"github.com/deciduosity/amboy/dependency"
 	"github.com/deciduosity/anser/client"
-	"github.com/deciduosity/anser/db"
 	"github.com/deciduosity/anser/model"
 	"github.com/deciduosity/grip"
 	"github.com/pkg/errors"
@@ -15,52 +14,38 @@ type Environment struct {
 	IsSetup            bool
 	ReturnNilClient    bool
 	SetupError         error
-	SessionError       error
 	ClientError        error
 	QueueError         error
 	NetworkError       error
 
-	PreferedSetup           interface{}
-	Session                 *Session
-	Client                  *Client
-	Network                 *DependencyNetwork
-	Queue                   amboy.Queue
-	SetupClient             client.Client
-	SetupSession            db.Session
-	Closers                 []func() error
-	DependencyManagers      map[string]*DependencyManager
-	LegacyMigrationRegistry map[string]db.MigrationOperation
-	LegacyProcessorRegistry map[string]db.Processor
-	MigrationRegistry       map[string]client.MigrationOperation
-	ProcessorRegistry       map[string]client.Processor
-	MetaNS                  model.Namespace
+	PreferedSetup      interface{}
+	Client             *Client
+	Network            *DependencyNetwork
+	Queue              amboy.Queue
+	SetupClient        client.Client
+	Closers            []func() error
+	DependencyManagers map[string]*DependencyManager
+	MigrationRegistry  map[string]client.MigrationOperation
+	ProcessorRegistry  map[string]client.Processor
+	MetaNS             model.Namespace
 }
 
 func NewEnvironment() *Environment {
 	return &Environment{
-		Session:                 NewSession(),
-		Network:                 NewDependencyNetwork(),
-		DependencyManagers:      make(map[string]*DependencyManager),
-		LegacyMigrationRegistry: make(map[string]db.MigrationOperation),
-		LegacyProcessorRegistry: make(map[string]db.Processor),
-		MigrationRegistry:       make(map[string]client.MigrationOperation),
-		ProcessorRegistry:       make(map[string]client.Processor),
+		Client:             NewClient(),
+		Network:            NewDependencyNetwork(),
+		DependencyManagers: make(map[string]*DependencyManager),
+		MigrationRegistry:  make(map[string]client.MigrationOperation),
+		ProcessorRegistry:  make(map[string]client.Processor),
 	}
 }
 
-func (e *Environment) Setup(q amboy.Queue, cl client.Client, session db.Session) error {
+func (e *Environment) Setup(q amboy.Queue, cl client.Client, name string) error {
 	e.Queue = q
 	e.IsSetup = true
-	e.SetupSession = session
 	e.SetupClient = cl
+	e.MetaNS.DB = name
 	return e.SetupError
-}
-
-func (e *Environment) GetSession() (db.Session, error) {
-	if e.SessionError != nil {
-		return nil, e.SessionError
-	}
-	return e.Session, nil
 }
 
 func (e *Environment) GetClient() (client.Client, error) {
@@ -70,10 +55,6 @@ func (e *Environment) GetClient() (client.Client, error) {
 
 	if e.ReturnNilClient {
 		return nil, nil
-	}
-
-	if e.Client == nil {
-		e.Client = NewClient()
 	}
 
 	return e.Client, nil
@@ -94,34 +75,6 @@ func (e *Environment) GetDependencyNetwork() (model.DependencyNetworker, error) 
 	}
 
 	return e.Network, nil
-}
-
-func (e *Environment) RegisterLegacyManualMigrationOperation(name string, op db.MigrationOperation) error {
-	if _, ok := e.LegacyMigrationRegistry[name]; ok {
-		return errors.Errorf("migration operation %s already exists", name)
-	}
-
-	e.LegacyMigrationRegistry[name] = op
-	return nil
-}
-
-func (e *Environment) GetLegacyManualMigrationOperation(name string) (db.MigrationOperation, bool) {
-	op, ok := e.LegacyMigrationRegistry[name]
-	return op, ok
-}
-
-func (e *Environment) RegisterLegacyDocumentProcessor(name string, docp db.Processor) error {
-	if _, ok := e.LegacyProcessorRegistry[name]; ok {
-		return errors.Errorf("document processor named %s already registered", name)
-	}
-
-	e.LegacyProcessorRegistry[name] = docp
-	return nil
-}
-
-func (e *Environment) GetLegacyDocumentProcessor(name string) (db.Processor, bool) {
-	docp, ok := e.LegacyProcessorRegistry[name]
-	return docp, ok
 }
 
 func (e *Environment) RegisterManualMigrationOperation(name string, op client.MigrationOperation) error {
@@ -172,6 +125,3 @@ func (e *Environment) Close() error {
 	}
 	return catcher.Resolve()
 }
-
-func (e *Environment) PreferClient() bool           { return e.ShouldPreferClient }
-func (e *Environment) SetPreferedDB(in interface{}) { e.PreferedSetup = in }

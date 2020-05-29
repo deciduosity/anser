@@ -9,6 +9,7 @@ import (
 	"github.com/deciduosity/amboy/registry"
 	"github.com/deciduosity/anser/mock"
 	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/grip"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -50,7 +51,7 @@ func (s *DependencyManagerSuite) TestNoEdgesReported() {
 
 func (s *DependencyManagerSuite) TestEdgeQueryReturnsError() {
 	s.helper.NumPendingMigrations = 2
-	s.helper.GetMigrationEventsIter = &legacyMigrationMetadataIterator{iter: &mock.Iterator{}}
+	s.helper.GetMigrationEventsIter = &cursorMigrationMetadataIterator{cursor: &mock.Cursor{}, catcher: grip.NewCatcher()}
 	s.helper.GetMigrationEventsError = errors.New("problem")
 	s.NoError(s.dep.AddEdge("foo"))
 	s.Equal(s.dep.State(), dependency.Blocked)
@@ -58,7 +59,7 @@ func (s *DependencyManagerSuite) TestEdgeQueryReturnsError() {
 
 func (s *DependencyManagerSuite) TestEdgeQueryReturnsNoResults() {
 	s.helper.NumPendingMigrations = 2
-	s.helper.GetMigrationEventsIter = &legacyMigrationMetadataIterator{iter: &mock.Iterator{}}
+	s.helper.GetMigrationEventsIter = &cursorMigrationMetadataIterator{cursor: &mock.Cursor{}, catcher: grip.NewCatcher()}
 	s.NoError(s.dep.AddEdge("foo"))
 	// the outcome is blocked because processEdges() ends up
 	// having seen 0 documents, but there are two edges pending
@@ -85,24 +86,24 @@ func TestDependencyEdgeProcessing(t *testing.T) {
 
 	// if we don't iterate (the default), then the number of edges of 1 will
 	// always be greater than 0, resulting  in a blocked state
-	assert.Equal(dependency.Blocked, processEdges(ctx, 1, &legacyMigrationMetadataIterator{iter: &mock.Iterator{}}))
+	assert.Equal(dependency.Blocked, processEdges(ctx, 1, &cursorMigrationMetadataIterator{cursor: &mock.Cursor{}, catcher: grip.NewCatcher()}))
 
 	// if there are -1 edges (not possible in normal situations,
 	// but...) then we will have seen in the iteration more
 	// dependencies (e.g. 0) than the number of edges (0)
-	assert.Equal(dependency.Ready, processEdges(ctx, -1, &legacyMigrationMetadataIterator{iter: &mock.Iterator{}}))
+	assert.Equal(dependency.Ready, processEdges(ctx, -1, &cursorMigrationMetadataIterator{cursor: &mock.Cursor{}, catcher: grip.NewCatcher()}))
 
 	// if the close method returns an error, then it's blocked.
-	assert.Equal(dependency.Blocked, processEdges(ctx, -1, &legacyMigrationMetadataIterator{iter: &mock.Iterator{Error: errors.New("blocked")}}))
+	assert.Equal(dependency.Blocked, processEdges(ctx, -1, &cursorMigrationMetadataIterator{cursor: &mock.Cursor{ErrError: errors.New("blocked")}, catcher: grip.NewCatcher()}))
 
 	assert.True((&model.MigrationMetadata{Completed: true, HasErrors: false}).Satisfied())
 	assert.False((&model.MigrationMetadata{}).Satisfied())
 
-	iter := &mock.Iterator{ShouldIter: true, Results: []interface{}{
+	iter := &mock.Cursor{ShouldIter: true, Results: []interface{}{
 		&model.MigrationMetadata{ID: "four", Completed: true, HasErrors: false},
 		&model.MigrationMetadata{ID: "five", Completed: true, HasErrors: false},
 		&model.MigrationMetadata{ID: "six", Completed: true, HasErrors: false},
 		&model.MigrationMetadata{ID: "seven"},
 	}}
-	assert.Equal(dependency.Blocked, processEdges(ctx, 1, &legacyMigrationMetadataIterator{iter: iter}))
+	assert.Equal(dependency.Blocked, processEdges(ctx, 1, &cursorMigrationMetadataIterator{cursor: iter, catcher: grip.NewCatcher()}))
 }

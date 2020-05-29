@@ -35,12 +35,3 @@ type MigrationMetadataIterator interface {
 	Err() error
 	Close() error
 }
-
-func NewMigrationHelper(e Environment) MigrationHelper {
-	if e.PreferClient() {
-		return NewClientMigrationHelper(e)
-	}
-
-	return NewClientMigrationHelper(e)
-	// return NewLegacyMigrationHelper(e)
-}

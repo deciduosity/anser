@@ -18,12 +18,9 @@ import (
 	"github.com/deciduosity/amboy"
 	"github.com/deciduosity/amboy/dependency"
 	"github.com/deciduosity/anser/client"
-	"github.com/deciduosity/anser/db"
 	"github.com/deciduosity/anser/model"
 	"github.com/deciduosity/grip"
 	"github.com/pkg/errors"
-	"go.mongodb.org/mongo-driver/mongo"
-	mgo "gopkg.in/mgo.v2"
 )
 
 const (
@@ -43,17 +40,11 @@ func init() { ResetEnvironment() }
 // Implementations should be thread-safe, and are not required to be
 // reconfigurable after their initial configuration.
 type Environment interface {
-	Setup(amboy.Queue, client.Client, db.Session) error
-	GetSession() (db.Session, error)
+	Setup(amboy.Queue, client.Client, string) error
 	GetClient() (client.Client, error)
 	GetQueue() (amboy.Queue, error)
 	GetDependencyNetwork() (model.DependencyNetworker, error)
 	MetadataNamespace() model.Namespace
-
-	RegisterLegacyManualMigrationOperation(string, db.MigrationOperation) error
-	GetLegacyManualMigrationOperation(string) (db.MigrationOperation, bool)
-	RegisterLegacyDocumentProcessor(string, db.Processor) error
-	GetLegacyDocumentProcessor(string) (db.Processor, bool)
 
 	RegisterManualMigrationOperation(string, client.MigrationOperation) error
 	GetManualMigrationOperation(string) (client.MigrationOperation, bool)
@@ -63,9 +54,6 @@ type Environment interface {
 	NewDependencyManager(string) dependency.Manager
 	RegisterCloser(func() error)
 	Close() error
-
-	SetPreferedDB(interface{})
-	PreferClient() bool
 }
 
 // GetEnvironment returns the global environment object. Because this
@@ -78,38 +66,26 @@ func GetEnvironment() Environment { return globalEnv }
 // concurrent use.
 func ResetEnvironment() {
 	globalEnv = &envState{
-		migrations: make(map[string]migrationOp),
-		processor:  make(map[string]processor),
+		migrations: make(map[string]client.MigrationOperation),
+		processor:  make(map[string]client.Processor),
 	}
-}
-
-type migrationOp struct {
-	legacy  db.MigrationOperation
-	current client.MigrationOperation
-}
-
-type processor struct {
-	legacy  db.Processor
-	current client.Processor
 }
 
 type envState struct {
 	queue        amboy.Queue
 	metadataNS   model.Namespace
-	session      db.Session
 	client       client.Client
 	deps         model.DependencyNetworker
-	migrations   map[string]migrationOp
-	processor    map[string]processor
+	migrations   map[string]client.MigrationOperation
+	processor    map[string]client.Processor
 	closers      []func() error
 	isSetup      bool
 	preferClient bool
 	mu           sync.RWMutex
 }
 
-func (e *envState) Setup(q amboy.Queue, cl client.Client, session db.Session) error {
+func (e *envState) Setup(q amboy.Queue, cl client.Client, name string) error {
 	catcher := grip.NewBasicCatcher()
-	catcher.NewWhen(session == nil, "cannot use a nil session")
 	catcher.NewWhen(cl == nil, "cannot use a nil client")
 
 	e.mu.Lock()
@@ -122,32 +98,14 @@ func (e *envState) Setup(q amboy.Queue, cl client.Client, session db.Session) er
 		return catcher.Resolve()
 	}
 
-	dbName := session.DB("").Name()
-	if dbName == "test" || dbName == "" {
-		dbName = defaultAnserDB
-	}
-
-	e.closers = append(e.closers, func() error { session.Close(); return nil })
 	e.queue = q
-	e.session = session
 	e.client = cl
 	e.metadataNS.Collection = defaultMetadataCollection
-	e.metadataNS.DB = dbName
+	e.metadataNS.DB = name
 	e.isSetup = true
 	e.deps = newDependencyNetwork()
 
 	return nil
-}
-
-func (e *envState) GetSession() (db.Session, error) {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-
-	if e.session == nil {
-		return nil, errors.New("no session defined")
-	}
-
-	return e.session.Copy(), nil
 }
 
 func (e *envState) GetClient() (client.Client, error) {
@@ -191,7 +149,7 @@ func (e *envState) RegisterManualMigrationOperation(name string, op client.Migra
 		return errors.Errorf("migration operation %s already exists", name)
 	}
 
-	e.migrations[name] = migrationOp{current: op}
+	e.migrations[name] = op
 	return nil
 }
 
@@ -200,10 +158,7 @@ func (e *envState) GetManualMigrationOperation(name string) (client.MigrationOpe
 	defer e.mu.RUnlock()
 
 	op, ok := e.migrations[name]
-	if op.current == nil && op.legacy != nil {
-		ok = false
-	}
-	return op.current, ok
+	return op, ok
 }
 
 func (e *envState) RegisterDocumentProcessor(name string, docp client.Processor) error {
@@ -214,7 +169,7 @@ func (e *envState) RegisterDocumentProcessor(name string, docp client.Processor)
 		return errors.Errorf("document processor named %s already registered", name)
 	}
 
-	e.processor[name] = processor{current: docp}
+	e.processor[name] = docp
 	return nil
 }
 
@@ -224,58 +179,7 @@ func (e *envState) GetDocumentProcessor(name string) (client.Processor, bool) {
 
 	docp, ok := e.processor[name]
 
-	if docp.current == nil && docp.legacy != nil {
-		ok = false
-	}
-
-	return docp.current, ok
-}
-
-func (e *envState) RegisterLegacyManualMigrationOperation(name string, op db.MigrationOperation) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-
-	if _, ok := e.migrations[name]; ok {
-		return errors.Errorf("migration operation %s already exists", name)
-	}
-
-	e.migrations[name] = migrationOp{legacy: op}
-	return nil
-}
-
-func (e *envState) GetLegacyManualMigrationOperation(name string) (db.MigrationOperation, bool) {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-
-	op, ok := e.migrations[name]
-	if op.legacy == nil && op.current != nil {
-		ok = false
-	}
-
-	return op.legacy, ok
-}
-
-func (e *envState) RegisterLegacyDocumentProcessor(name string, docp db.Processor) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-
-	if _, ok := e.processor[name]; ok {
-		return errors.Errorf("document processor named %s already registered", name)
-	}
-
-	e.processor[name] = processor{legacy: docp}
-	return nil
-}
-
-func (e *envState) GetLegacyDocumentProcessor(name string) (db.Processor, bool) {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-
-	docp, ok := e.processor[name]
-	if docp.legacy == nil && docp.current != nil {
-		ok = false
-	}
-	return docp.legacy, ok
+	return docp, ok
 }
 
 func (e *envState) MetadataNamespace() model.Namespace {
@@ -292,11 +196,7 @@ func (e *envState) NewDependencyManager(migrationID string) dependency.Manager {
 	defer e.mu.RUnlock()
 
 	d.MigrationID = migrationID
-	if e.unsafePreferClient() {
-		d.MigrationHelper = NewMigrationHelper(e)
-	} else {
-		d.MigrationHelper = NewLegacyMigrationHelper(e)
-	}
+	d.MigrationHelper = NewMigrationHelper(e)
 
 	return d
 }
@@ -327,37 +227,4 @@ func (e *envState) Close() error {
 	}
 
 	return catcher.Resolve()
-}
-
-func (e *envState) SetPreferedDB(in interface{}) {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-
-	switch in.(type) {
-	case db.Session:
-		e.preferClient = false
-	case client.Client:
-		e.preferClient = true
-	case *mongo.Client:
-		e.preferClient = true
-	case *mgo.Session:
-		e.preferClient = false
-	}
-}
-
-func (e *envState) PreferClient() bool {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-	return e.unsafePreferClient()
-}
-
-func (e *envState) unsafePreferClient() bool {
-	if e.client == nil && e.session != nil {
-		return false
-	}
-	if e.session == nil && e.client != nil {
-		return true
-	}
-
-	return e.preferClient
 }

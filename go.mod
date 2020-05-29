@@ -15,5 +15,5 @@ require (
 	github.com/tychoish/tarjan v0.0.0-20170824211642-fcd3f3321826
 	go.mongodb.org/mongo-driver v1.3.3
 	gonum.org/v1/gonum v0.7.0 // indirect
-	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 )

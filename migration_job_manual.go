@@ -3,15 +3,15 @@ package anser
 import (
 	"context"
 
-	"github.com/deciduosity/birch"
 	"github.com/deciduosity/amboy"
 	"github.com/deciduosity/amboy/job"
 	"github.com/deciduosity/amboy/registry"
 	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/birch"
 	"github.com/deciduosity/grip"
 	"github.com/deciduosity/grip/message"
 	"github.com/pkg/errors"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func init() {
@@ -58,24 +58,7 @@ func (j *manualMigrationJob) Run(ctx context.Context) {
 	defer j.FinishMigration(ctx, j.Definition.Migration, &j.Base)
 	env := j.Env()
 
-	if operation, ok := env.GetLegacyManualMigrationOperation(j.Definition.OperationName); ok {
-		session, err := env.GetSession()
-		if err != nil {
-			j.AddError(errors.Wrap(err, "problem getting database session"))
-			return
-		}
-		defer session.Close()
-
-		var doc bson.RawD
-		coll := session.DB(j.Definition.Namespace.DB).C(j.Definition.Namespace.Collection)
-		err = coll.FindId(j.Definition.ID).One(&doc)
-		if err != nil {
-			j.AddError(err)
-			return
-		}
-
-		j.AddError(operation(session, doc))
-	} else if operation, ok := env.GetManualMigrationOperation(j.Definition.OperationName); ok {
+	if operation, ok := env.GetManualMigrationOperation(j.Definition.OperationName); ok {
 		client, err := env.GetClient()
 		if err != nil {
 			j.AddError(errors.Wrap(err, "problem getting database client"))

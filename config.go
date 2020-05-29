@@ -49,10 +49,6 @@ func NewApplication(env Environment, conf *model.Configuration) (*Application, e
 			seen++
 		}
 
-		if _, ok := env.GetLegacyManualMigrationOperation(g.Name); ok {
-			seen++
-		}
-
 		if seen != 1 {
 			catcher.Errorf("manual migration operation '%s' is not defined ", g.Name)
 			continue
@@ -70,9 +66,6 @@ func NewApplication(env Environment, conf *model.Configuration) (*Application, e
 
 		seen := 0
 		if _, ok := env.GetDocumentProcessor(g.Name); !ok {
-			seen++
-		}
-		if _, ok := env.GetLegacyDocumentProcessor(g.Name); !ok {
 			seen++
 		}
 

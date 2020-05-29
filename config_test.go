@@ -3,11 +3,11 @@ package anser
 import (
 	"testing"
 
-	"github.com/deciduosity/anser/db"
+	"github.com/deciduosity/anser/client"
 	"github.com/deciduosity/anser/mock"
 	"github.com/deciduosity/anser/model"
+	"github.com/deciduosity/birch"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func TestApplicationConstructor(t *testing.T) {
@@ -56,7 +56,7 @@ func TestApplicationConstructor(t *testing.T) {
 		},
 	}
 
-	env.LegacyMigrationRegistry["manualOne"] = func(s db.Session, d bson.RawD) error { return nil }
+	env.MigrationRegistry["manualOne"] = func(c client.Client, doc *birch.Document) error { return nil }
 	conf.ManualMigrations = []model.ConfigurationManualMigration{
 		{
 			Options: model.GeneratorOptions{
@@ -67,7 +67,6 @@ func TestApplicationConstructor(t *testing.T) {
 		},
 	}
 
-	env.LegacyProcessorRegistry["streamOne"] = &mock.LegacyProcessor{}
 	conf.StreamMigrations = []model.ConfigurationManualMigration{
 		{
 			Options: model.GeneratorOptions{

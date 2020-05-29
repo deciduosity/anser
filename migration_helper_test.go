@@ -9,7 +9,6 @@ import (
 	"github.com/deciduosity/amboy/job"
 	"github.com/deciduosity/amboy/queue"
 	"github.com/deciduosity/anser/client"
-	"github.com/deciduosity/anser/db"
 	"github.com/deciduosity/anser/mock"
 	"github.com/deciduosity/anser/model"
 	"github.com/pkg/errors"
@@ -17,13 +16,11 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	mgo "gopkg.in/mgo.v2"
 )
 
 type MigrationHelperSuite struct {
 	env          *mock.Environment
 	mh           *migrationBase
-	session      db.Session
 	client       client.Client
 	queue        amboy.Queue
 	cancel       context.CancelFunc
@@ -48,9 +45,6 @@ func (s *MigrationHelperSuite) SetupSuite() {
 	s.queue = queue.NewLocalLimitedSize(4, 256)
 	s.NoError(s.queue.Start(ctx))
 
-	ses, err := mgo.DialWithTimeout("mongodb://localhost:27017", 10*time.Millisecond)
-	s.Require().NoError(err)
-	s.session = db.WrapSession(ses)
 	cl, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017").SetConnectTimeout(100 * time.Millisecond))
 	s.Require().NoError(err)
 	err = cl.Connect(ctx)
@@ -69,7 +63,7 @@ func (s *MigrationHelperSuite) SetupTest() {
 	s.env.ShouldPreferClient = s.preferClient
 	s.mh = NewMigrationHelper(s.env).(*migrationBase)
 
-	s.NoError(s.env.Setup(s.queue, s.client, s.session))
+	s.NoError(s.env.Setup(s.queue, s.client, "anserDB"))
 }
 
 func (s *MigrationHelperSuite) TestEnvironmentIsConsistent() {
@@ -120,7 +114,6 @@ func (s *MigrationHelperSuite) TestErrorCaseInMigrationFinishing() {
 	env := mock.NewEnvironment()
 	ns := model.Namespace{DB: "dbname", Collection: "collname"}
 	env.MetaNS = ns
-	env.Session.DB(ns.DB).C(ns.Collection).(*mock.LegacyCollection).FailWrites = true
 
 	mh := NewMigrationHelper(env).(*migrationBase)
 

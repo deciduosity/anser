@@ -14,6 +14,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type errorMigrationIterator struct {
+	err error
+}
+
+func (e *errorMigrationIterator) Err() error                     { return e.err }
+func (e *errorMigrationIterator) Close() error                   { return nil }
+func (e *errorMigrationIterator) Next(_ context.Context) bool    { return false }
+func (e *errorMigrationIterator) Item() *model.MigrationMetadata { return nil }
+
 type cursorMigrationMetadataIterator struct {
 	cursor  client.Cursor
 	catcher grip.Catcher
@@ -34,7 +43,7 @@ func (c *cursorMigrationMetadataIterator) Item() *model.MigrationMetadata {
 	return o
 }
 
-func NewClientMigrationHelper(e Environment) MigrationHelper { return &migrationBase{env: e} }
+func NewMigrationHelper(e Environment) MigrationHelper { return &migrationBase{env: e} }
 
 type migrationBase struct {
 	env Environment

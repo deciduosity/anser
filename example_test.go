@@ -7,12 +7,10 @@ import (
 
 	"github.com/deciduosity/amboy/queue"
 	"github.com/deciduosity/anser/client"
-	"github.com/deciduosity/anser/db"
 	"github.com/deciduosity/anser/model"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	mgo "gopkg.in/mgo.v2"
 )
 
 // proofOfConcept is a simple mock "main" to demonstrate how you could
@@ -32,26 +30,13 @@ func proofOfConcept(shouldUseClient bool) error {
 	}
 
 	client := client.WrapClient(cl)
-	var session db.Session
-	if shouldUseClient {
-		env.SetPreferedDB(client)
-		session = db.WrapClient(ctx, cl)
-	} else {
-		ses, err := mgo.DialWithTimeout("mongodb://localhost:27017", 100*time.Millisecond)
-		if err != nil {
-			return err
-		}
-		session = db.WrapSession(ses)
-
-		env.SetPreferedDB(session)
-	}
 
 	q := queue.NewAdaptiveOrderedLocalQueue(3, 3)
 	if err := q.Start(ctx); err != nil {
 		return err
 	}
 
-	if err := env.Setup(q, client, session); err != nil {
+	if err := env.Setup(q, client, "anser_test"); err != nil {
 		return err
 	}
 

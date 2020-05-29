@@ -4,8 +4,8 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/deciduosity/birch"
 	"github.com/deciduosity/anser/client"
+	"github.com/deciduosity/birch"
 	"github.com/deciduosity/grip"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -52,7 +52,7 @@ func (d *Database) Collection(name string) client.Collection {
 		return coll
 	}
 
-	d.Collections[name] = &Collection{CollName: name, SingleResult: NewSingleResult()}
+	d.Collections[name] = &Collection{CollName: name, SingleResult: NewSingleResult(), Cursor: &Cursor{}}
 	return d.Collections[name]
 }
 func (d *Database) RunCommand(ctx context.Context, cmd interface{}) client.SingleResult { return nil }
@@ -62,19 +62,21 @@ func (d *Database) RunCommandCursor(ctx context.Context, cmd interface{}) (clien
 
 type Collection struct {
 	CollName         string
-	UpdateResult     client.UpdateResult
+	Cursor           *Cursor
 	SingleResult     *SingleResult
+	UpdateResult     client.UpdateResult
 	InsertManyResult client.InsertManyResult
 	InsertOneResult  client.InsertOneResult
 	FindError        error
+	AggregateError   error
 }
 
 func (c *Collection) Name() string { return c.CollName }
 func (c *Collection) Aggregate(ctx context.Context, pipe interface{}, opts ...*options.AggregateOptions) (client.Cursor, error) {
-	return nil, nil
+	return c.Cursor, c.AggregateError
 }
 func (c *Collection) Find(ctx context.Context, query interface{}, opts ...*options.FindOptions) (client.Cursor, error) {
-	return nil, c.FindError
+	return c.Cursor, c.FindError
 }
 func (c *Collection) FindOne(ctx context.Context, query interface{}, opts ...*options.FindOneOptions) client.SingleResult {
 	return c.SingleResult
@@ -153,6 +155,8 @@ func NewSingleResult() *SingleResult {
 	return &SingleResult{DecodeBytesValue: val}
 }
 
-func (sr *SingleResult) Decode(in interface{}) error  { return sr.DecodeError }
-func (sr *SingleResult) DecodeBytes() ([]byte, error) { return sr.DecodeBytesValue, sr.DecodeBytesError }
-func (sr *SingleResult) Err() error                   { return sr.ErrorValue }
+func (sr *SingleResult) Decode(in interface{}) error { return sr.DecodeError }
+func (sr *SingleResult) DecodeBytes() ([]byte, error) {
+	return sr.DecodeBytesValue, sr.DecodeBytesError
+}
+func (sr *SingleResult) Err() error { return sr.ErrorValue }
