@@ -6,7 +6,7 @@ import (
 
 	"github.com/deciduosity/anser/client"
 	"github.com/deciduosity/birch"
-	"github.com/deciduosity/grip"
+	"github.com/cdr/grip"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

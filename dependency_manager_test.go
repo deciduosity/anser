@@ -5,11 +5,11 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/deciduosity/amboy/dependency"
-	"github.com/deciduosity/amboy/registry"
+	"github.com/cdr/amboy/dependency"
+	"github.com/cdr/amboy/registry"
 	"github.com/deciduosity/anser/mock"
 	"github.com/deciduosity/anser/model"
-	"github.com/deciduosity/grip"
+	"github.com/cdr/grip"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

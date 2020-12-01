@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/deciduosity/ftdc"
-	"github.com/deciduosity/grip"
-	"github.com/deciduosity/grip/recovery"
+	"github.com/cdr/grip"
+	"github.com/cdr/grip/recovery"
 )
 
 type loggingMonitor struct {

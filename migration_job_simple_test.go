@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/deciduosity/amboy/registry"
+	"github.com/cdr/amboy/registry"
 	"github.com/deciduosity/anser/client"
 	"github.com/deciduosity/anser/mock"
 	"github.com/deciduosity/anser/model"

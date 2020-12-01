@@ -14,10 +14,10 @@ package anser
 import (
 	"context"
 
-	"github.com/deciduosity/amboy"
-	"github.com/deciduosity/amboy/dependency"
+	"github.com/cdr/amboy"
+	"github.com/cdr/amboy/dependency"
+	"github.com/cdr/grip"
 	"github.com/deciduosity/anser/model"
-	"github.com/deciduosity/grip"
 	"github.com/pkg/errors"
 )
 
@@ -53,7 +53,7 @@ func generatorDependency(env Environment, o model.GeneratorOptions) dependency.M
 func addMigrationJobs(ctx context.Context, q amboy.Queue, dryRun bool, limit int) (int, error) {
 	catcher := grip.NewCatcher()
 	count := 0
-	for job := range q.Results(ctx) {
+	for job := range q.Jobs(ctx) {
 		generator, ok := job.(Generator)
 		if !ok {
 			continue

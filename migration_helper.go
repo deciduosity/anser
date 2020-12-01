@@ -3,7 +3,7 @@ package anser
 import (
 	"context"
 
-	"github.com/deciduosity/amboy/job"
+	"github.com/cdr/amboy/job"
 	"github.com/deciduosity/anser/model"
 )
 

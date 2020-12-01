@@ -24,9 +24,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/deciduosity/amboy"
+	"github.com/cdr/amboy"
 	"github.com/deciduosity/anser/model"
-	"github.com/deciduosity/grip"
+	"github.com/cdr/grip"
 	"github.com/pkg/errors"
 )
 

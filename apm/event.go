@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/deciduosity/birch"
-	"github.com/deciduosity/grip/message"
+	"github.com/cdr/grip/message"
 )
 
 type eventKey struct {

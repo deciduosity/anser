@@ -3,13 +3,13 @@ package anser
 import (
 	"context"
 
-	"github.com/deciduosity/amboy"
-	"github.com/deciduosity/amboy/job"
-	"github.com/deciduosity/amboy/registry"
+	"github.com/cdr/amboy"
+	"github.com/cdr/amboy/job"
+	"github.com/cdr/amboy/registry"
 	"github.com/deciduosity/anser/model"
 	"github.com/deciduosity/birch"
-	"github.com/deciduosity/grip"
-	"github.com/deciduosity/grip/message"
+	"github.com/cdr/grip"
+	"github.com/cdr/grip/message"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 )

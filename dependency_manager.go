@@ -11,9 +11,9 @@ package anser
 import (
 	"context"
 
-	"github.com/deciduosity/amboy/dependency"
-	"github.com/deciduosity/amboy/registry"
-	"github.com/deciduosity/grip"
+	"github.com/cdr/amboy/dependency"
+	"github.com/cdr/amboy/registry"
+	"github.com/cdr/grip"
 )
 
 func init() {

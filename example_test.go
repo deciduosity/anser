@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/deciduosity/amboy/queue"
+	"github.com/cdr/amboy/queue"
 	"github.com/deciduosity/anser/client"
 	"github.com/deciduosity/anser/model"
 	"github.com/stretchr/testify/assert"

@@ -3,7 +3,7 @@ package mock
 import (
 	"testing"
 
-	"github.com/deciduosity/amboy/dependency"
+	"github.com/cdr/amboy/dependency"
 	"github.com/deciduosity/anser"
 	"github.com/deciduosity/anser/client"
 	"github.com/deciduosity/anser/db"

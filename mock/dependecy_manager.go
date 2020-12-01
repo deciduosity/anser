@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"github.com/deciduosity/amboy/dependency"
+	"github.com/cdr/amboy/dependency"
 )
 
 type DependencyManager struct {

@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/deciduosity/amboy"
-	"github.com/deciduosity/amboy/job"
-	"github.com/deciduosity/amboy/queue"
+	"github.com/cdr/amboy"
+	"github.com/cdr/amboy/job"
+	"github.com/cdr/amboy/queue"
 	"github.com/deciduosity/anser/client"
 	"github.com/deciduosity/anser/mock"
 	"github.com/deciduosity/anser/model"

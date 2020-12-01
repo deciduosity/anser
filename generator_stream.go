@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/deciduosity/amboy"
-	"github.com/deciduosity/amboy/job"
-	"github.com/deciduosity/amboy/registry"
+	"github.com/cdr/amboy"
+	"github.com/cdr/amboy/job"
+	"github.com/cdr/amboy/registry"
 	"github.com/deciduosity/anser/client"
 	"github.com/deciduosity/anser/model"
-	"github.com/deciduosity/grip"
-	"github.com/deciduosity/grip/message"
+	"github.com/cdr/grip"
+	"github.com/cdr/grip/message"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

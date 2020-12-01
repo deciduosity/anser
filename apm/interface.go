@@ -2,7 +2,7 @@ package apm
 
 import (
 	"github.com/deciduosity/birch"
-	"github.com/deciduosity/grip/message"
+	"github.com/cdr/grip/message"
 	"go.mongodb.org/mongo-driver/event"
 )
 
