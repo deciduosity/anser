@@ -50,12 +50,12 @@ There are three major types of migrations:
 Internally these jobs execute using amboy infrastructure and make it
 possible to express dependencies between migrations. Additionally the
 `MovingAverageRateLimitedWorkers
-<https://godoc.org/github.com/mongodb/amboy/pool#NewMovingAverageRateLimitedWorkers>`_
+<https://godoc.org/github.com/deciduosity/amboy/pool#NewMovingAverageRateLimitedWorkers>`_
 and `SimpleRateLimitingWorkers
-<https://godoc.org/github.com/mongodb/amboy/pool#NewSimpleRateLimitedWorkers>`_
+<https://godoc.org/github.com/deciduosity/amboy/pool#NewSimpleRateLimitedWorkers>`_
 were developed to support anser migrations, as well as the `adaptive
 ordering local queue
-<https://godoc.org/github.com/mongodb/amboy/queue#NewAdaptiveOrderedLocalQueue>`_
+<https://godoc.org/github.com/deciduosity/amboy/queue#NewAdaptiveOrderedLocalQueue>`_
 which respects dependency-driven ordering.
 
 Considerations
@@ -82,37 +82,36 @@ building migrations:
   logical migrations are split across more than one generator
   function.  
 
-Installation
-------------
+Use
+---
 
-Anser uses `grip <https://github.com/mongodb/grip>`_ for logging and
-`amboy <https://github.com/mongodb/amboy>`_ for task
-management. Because anser does not vendor these dependencies, you
-should also vendor them. 
+Anser uses `grip <https://github.com/deciduosity/grip>`_ for logging and
+`amboy <https://github.com/deciduosity/amboy>`_ for task management,
+otherwise, just begin using the 
 
 Resources
 ---------
 
 Please consult the godoc for most usage. Most of the API is in the `top
-level package <https://godoc.org/github.com/mongodb/anser>`_; however,
+level package <https://godoc.org/github.com/deciduosity/anser>`_; however,
 please do also consider the `model
-<https://godoc.org/github.com/mongodb/anser/model>`_ 
-and `bsonutil <https://godoc.org/github.com/mongodb/anser/bsonutil>`_ package.
+<https://godoc.org/github.com/deciduosity/anser/model>`_ 
+and `bsonutil <https://godoc.org/github.com/deciduosity/anser/bsonutil>`_ package.
 
 Additionally you can use the interfaces `db
-<https://godoc.org/github.com/mongodb/anser/db>`_
-package as a wrapper for `mgo <https://godoc.org/github.com/mongodb/anser>`_ to access
-MongoDB which allows you to use `mocks
-<https://godoc.org/github.com/mongodb/anser/mocks>`_ as needed for
+<https://godoc.org/github.com/deciduosity/anser/db>`_
+package as a wrapper for `mgo <https://godoc.org/github.com/deciduosity/anser>`_ to access
+Deciduosity which allows you to use `mocks
+<https://godoc.org/github.com/deciduosity/anser/mocks>`_ as needed for
 testing without depending on a running database instance.
 
 Project
 -------
 
-Please file feature requests and bug reports in the `MAKE project
-<https://jira.mongodb.com/browse/MAKE>`_ of the MongoDB Jira
-instance. This is also the place to file related amboy and grip
-requests.
+Anser is available for use under the terms of the Apache License (v2). 
+
+If you encounter a problem with anser, or would like to see a feature added,
+please open an issue on the GitHub project!
 
 Future anser development will focus on supporting additional migration
 workflows, supporting additional MongoDB and BSON utilities, and
